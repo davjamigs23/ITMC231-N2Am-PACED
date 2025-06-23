@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>E-WAY Sign In</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    body {
+      background-color: #ffffff;
+      color: #113c23;
+      line-height: 1.6;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(to right, #e7beb5, #c5efea);
+    }
+
+    .error-message {
+      color: #ef4444;
+      font-size: 0.875rem;
+      margin-top: 0.25rem;
+    }
+
+    .role-selector {
+      display: flex;
+      border-radius: 30px;
+      overflow: hidden;
+      border: 1px solid #d1d5db;
+      background-color: #f3f4f6;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .role-option {
+      flex: 1;
+      position: relative;
+    }
+
+    .role-option input {
+      position: absolute;
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .role-label {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0.75rem 1rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-weight: 500;
+      color: #6b7280;
+    }
+
+    .role-option input:checked + .role-label {
+      background: linear-gradient(to right, #10b981, #3b82f6);
+      color: white;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    }
+
+    .role-option:first-child .role-label {
+      border-top-left-radius: 30px;
+      border-bottom-left-radius: 30px;
+    }
+
+    .role-option:last-child .role-label {
+      border-top-right-radius: 30px;
+      border-bottom-right-radius: 30px;
+    }
+
+    .btn-gradient {
+      background: linear-gradient(135deg, #10b981 0%, #3b82f6 100%);
+      background-size: 200% auto;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      border: none;
+      color: white;
+      font-weight: 600;
+      padding: 0.75rem;
+      border-radius: 30px;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn-gradient::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+      transition: 0.5s;
+    }
+
+    .btn-gradient:hover::before {
+      left: 100%;
+    }
+
+    .btn-gradient:hover {
+      background-position: right center;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .btn-gradient:active {
+      transform: translateY(0);
+    }
+
+    .input-field {
+      width: 100%;
+      border: 1px solid #d1d5db;
+      padding: 0.75rem 1rem;
+      border-radius: 30px;
+      font-size: 0.95rem;
+      transition: all 0.3s ease;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+    }
+
+    .input-field:focus {
+      outline: none;
+      border-color: #10b981;
+      box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
+    }
+
+    .checkbox-container {
+      display: flex;
+      align-items: center;
+    }
+
+    .checkbox-container input[type="checkbox"] {
+      appearance: none;
+      width: 18px;
+      height: 18px;
+      border: 2px solid #d1d5db;
+      border-radius: 4px;
+      margin-right: 8px;
+      cursor: pointer;
+      position: relative;
+      transition: all 0.2s ease;
+    }
+
+    .checkbox-container input[type="checkbox"]:checked {
+      background-color: #10b981;
+      border-color: #10b981;
+    }
+
+    .checkbox-container input[type="checkbox"]:checked::after {
+      content: '✓';
+      position: absolute;
+      color: white;
+      font-size: 12px;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    .link-hover {
+      transition: all 0.3s ease;
+      position: relative;
+    }
+
+    .link-hover::after {
+      content: '';
+      position: absolute;
+      width: 0;
+      height: 2px;
+      bottom: -2px;
+      left: 0;
+      background-color: #10b981;
+      transition: width 0.3s;
+    }
+
+    .link-hover:hover::after {
+      width: 100%;
+    }
+
+    .logo-container {
+      transition: transform 0.3s ease;
+    }
+
+    .logo-container:hover {
+      transform: scale(1.05);
+    }
+
+    .main-container {
+      box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+      border-radius: 20px;
+      overflow: hidden;
+      animation: fadeIn 0.5s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .illustration {
+      transition: transform 0.5s ease;
+    }
+
+    .illustration:hover {
+      transform: scale(1.03);
+    }
+  </style>
+</head>
+<body>
+  <div class="fixed top-4 left-4 z-10 logo-container">
+    <a href="/Homepage/Homepage.html">
+      <img src="/Images/E-way Logo.png" alt="E-WAY Logo" class="max-w-[140px] h-auto object-contain">
+    </a>
+  </div>
+
+  <main class="flex w-full max-w-6xl main-container bg-white h-[600px]">
+    <aside class="w-1/2 bg-green-50 flex flex-col items-center justify-center p-12">
+      <img src="/Images/Sign In and up Pic.png" alt="E-WAY platform illustration" class="object-contain w-full h-full p-8 illustration">
+    </aside>
+
+    <section class="w-1/2 bg-white p-12 flex flex-col justify-center">
+      <h2 class="text-3xl font-bold text-green-800 mb-6">Sign In</h2>
+
+      <form id="signInForm">
+        <!-- Enhanced Role Selector -->
+        <div class="mb-6">
+          <label class="block text-sm font-medium text-gray-700 mb-2">Sign in as:</label>
+          <div class="role-selector">
+            <label class="role-option">
+              <input type="radio" name="role" value="user" checked>
+              <span class="role-label">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd" />
+                </svg>
+                User
+              </span>
+            </label>
+            <label class="role-option">
+              <input type="radio" name="role" value="admin">
+              <span class="role-label">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd" />
+                </svg>
+                Admin
+              </span>
+            </label>
+          </div>
+        </div>
+
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
+            <input type="email" id="email" placeholder="your@email.com" required
+                   class="input-field">
+            <div id="emailError" class="error-message hidden">Please enter a valid email address</div>
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+            <input type="password" id="password" placeholder="••••••••" required minlength="6"
+                   class="input-field">
+            <div id="passwordError" class="error-message hidden"></div>
+          </div>
+
+          <div class="flex items-center justify-between">
+            <label class="checkbox-container">
+              <input type="checkbox" class="h-4 w-4 text-green-600 border-gray-300 rounded focus:ring-green-500">
+              <span class="text-sm text-gray-600">Remember me</span>
+            </label>
+            <a href="/Account/Forgot Password.html" class="text-sm text-green-600 link-hover">Forgot password?</a>
+          </div>
+        </div>
+        
+        <button type="submit"
+                class="w-full btn-gradient text-white py-2.5 rounded-md mt-6 font-medium tracking-wide">
+          Sign In
+        </button>
+      </form>
+      
+      <p class="mt-6 text-sm text-center text-gray-600">
+        Don't have an account?
+        <a href="/Account/Create Account.html" class="text-green-600 font-medium link-hover">Create Account</a>
+      </p>
+    </section>
+  </main>
+
+  <!-- Add Supabase JS -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <!-- Add Supabase Configuration -->
+  <script>
+    // Initialize Supabase
+    const supabase = supabase.createClient(
+      'https://kivksqpoojfrtfmjfrch.supabase.co',
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtpdmtzcXBvb2pmcnRmbWpmcmNoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTAzNTEwMjUsImV4cCI6MjA2NTkyNzAyNX0.1DjX5Bx195aLyAJY37x2TpOksFS92GVflHc7u97v2LQ',
+      {
+        auth: {
+          autoRefreshToken: true,
+          persistSession: true,
+          detectSessionInUrl: true
+        }
+      }
+    );
+
+    document.addEventListener('DOMContentLoaded', function() {
+      const signInForm = document.getElementById('signInForm');
+      if (!signInForm) return;
+
+      // Add hover effect to form inputs
+      document.querySelectorAll('.input-field').forEach(input => {
+        input.addEventListener('mouseenter', () => {
+          input.style.boxShadow = '0 2px 8px rgba(0,0,0,0.1)';
+        });
+        
+        input.addEventListener('mouseleave', () => {
+          input.style.boxShadow = 'none';
+        });
+      });
+      
+      // Handle form submission
+      signInForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+        const emailError = document.getElementById('emailError');
+        const passwordError = document.getElementById('passwordError');
+        
+        // Basic validation
+        let isValid = true;
+        if (!email.includes('@')) {
+          if (emailError) {
+            emailError.textContent = 'Please enter a valid email address';
+            emailError.classList.remove('hidden');
+          }
+          isValid = false;
+        } else if (emailError) {
+          emailError.classList.add('hidden');
+        }
+        
+        if (!password) {
+          if (passwordError) {
+            passwordError.textContent = 'Please enter your password';
+            passwordError.classList.remove('hidden');
+          }
+          isValid = false;
+        } else if (passwordError) {
+          passwordError.classList.add('hidden');
+        }
+        
+        if (!isValid) return;
+        
+        // Animation effect on submission
+        const submitBtn = e.target.querySelector('button[type="submit"]');
+        submitBtn.innerHTML = 'Signing In...';
+        submitBtn.disabled = true;
+        submitBtn.style.background = 'linear-gradient(135deg, #3b82f6 0%, #10b981 100%)';
+        
+        try {
+          console.log('Attempting to sign in with email:', email);
+          
+          // Sign in with Supabase
+          const { data, error } = await supabase.auth.signInWithPassword({
+            email,
+            password
+          });
+          
+          console.log('Sign in response:', { data, error });
+            
+          if (error) {
+            console.error('Sign in error:', error);
+            throw error;
+          }
+          
+          if (!data || !data.user) {
+            throw new Error('No user data returned from sign in');
+          }
+          
+          console.log('Successfully signed in. User ID:', data.user.id);
+          
+          // Get user role from the profiles table
+          console.log('Fetching user profile...');
+          const { data: userData, error: userError } = await supabase
+            .from('profiles')
+            .select('role')
+            .eq('id', data.user.id)
+            .single();
+            
+          console.log('Profile fetch result:', { userData, userError });
+            
+          if (userError) {
+            console.warn('No profile found, creating new profile with default role');
+            // If no profile exists, create one with default role
+            const profileData = { 
+              id: data.user.id, 
+              email: data.user.email,
+              role: 'user' // Default role
+            };
+            
+            console.log('Creating new profile:', profileData);
+            const { error: insertError } = await supabase
+              .from('profiles')
+              .insert([profileData]);
+              
+            if (insertError) {
+              console.error('Error creating profile:', insertError);
+              throw insertError;
+            }
+            
+            // Redirect to user dashboard by default
+            console.log('Profile created. Redirecting to user dashboard...');
+            window.location.href = '/Homepage/HomepageWithAccount.html';
+            return;
+          } 
+          
+          // If we have user data, handle redirection based on role
+          console.log('User role from database:', userData.role);
+          if (userData.role === 'admin') {
+            console.log('Redirecting to admin dashboard');
+            window.location.href = '/Admin/admin-dashboard.html';
+          } else {
+            console.log('Redirecting to user dashboard');
+            window.location.href = '/Homepage/HomepageWithAccount.html';
+          }
+          
+        } catch (error) {
+          console.error('Sign in error:', error);
+          const errorMessage = error.message || 'Failed to sign in. Please check your credentials.';
+          console.error('Error details:', errorMessage);
+          
+          const passwordError = document.getElementById('passwordError');
+          if (passwordError) {
+            passwordError.textContent = errorMessage;
+            passwordError.classList.remove('hidden');
+          } else {
+            console.error('Could not find passwordError element to display error');
+            alert('Error: ' + errorMessage);
+          }
+          
+          // Reset button
+          const submitBtn = e.target.querySelector('button[type="submit"]');
+          submitBtn.disabled = false;
+          submitBtn.innerHTML = 'Sign In';
+          submitBtn.style.background = 'linear-gradient(135deg, #0d9488 0%, #10b981 100%)';
+        }
+      });
+    });
+  </script>
+</body>
+</html>

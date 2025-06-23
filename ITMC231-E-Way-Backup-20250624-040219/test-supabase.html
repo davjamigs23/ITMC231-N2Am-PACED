@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Supabase DB</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script type="module" src="./js/supabase-config.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="p-8 max-w-4xl mx-auto">
+    <h1 class="text-2xl font-bold mb-6">Supabase Database Test</h1>
+    
+    <div class="space-y-4">
+        <div class="p-4 border rounded">
+            <h2 class="text-xl font-semibold mb-2">1. Test Database Connection</h2>
+            <button onclick="testConnection()" class="bg-blue-500 text-white px-4 py-2 rounded">
+                Test Connection
+            </button>
+            <div id="connection-result" class="mt-2 p-2 bg-gray-100 rounded hidden"></div>
+        </div>
+
+        <div class="p-4 border rounded">
+            <h2 class="text-xl font-semibold mb-2">2. Test User Authentication</h2>
+            <div class="space-y-2">
+                <input type="email" id="test-email" placeholder="Email" class="block w-full p-2 border rounded">
+                <input type="password" id="test-password" placeholder="Password" class="block w-full p-2 border rounded">
+                <div class="flex space-x-2">
+                    <button onclick="signUpTest()" class="bg-green-500 text-white px-4 py-2 rounded">
+                        Sign Up
+                    </button>
+                    <button onclick="signInTest()" class="bg-blue-500 text-white px-4 py-2 rounded">
+                        Sign In
+                    </button>
+                    <button onclick="signOutTest()" class="bg-red-500 text-white px-4 py-2 rounded">
+                        Sign Out
+                    </button>
+                </div>
+            </div>
+            <div id="auth-result" class="mt-2 p-2 bg-gray-100 rounded hidden"></div>
+        </div>
+
+        <div class="p-4 border rounded">
+            <h2 class="text-xl font-semibold mb-2">3. Test Database Operations</h2>
+            <div class="space-y-2">
+                <button onclick="testInsert()" class="bg-purple-500 text-white px-4 py-2 rounded">
+                    Test Insert
+                </button>
+                <button onclick="testSelect()" class="bg-yellow-500 text-white px-4 py-2 rounded">
+                    Test Select
+                </button>
+            </div>
+            <div id="db-result" class="mt-2 p-2 bg-gray-100 rounded hidden"></div>
+        </div>
+    </div>
+
+    <script>
+        // Import Supabase client
+        import { supabase } from './js/supabase-config.js';
+
+        // Test database connection
+        async function testConnection() {
+            const resultDiv = document.getElementById('connection-result');
+            resultDiv.classList.remove('hidden');
+            resultDiv.textContent = 'Testing connection...';
+            
+            try {
+                const { data, error } = await supabase.from('profiles').select('*').limit(1);
+                
+                if (error) throw error;
+                
+                resultDiv.textContent = '✅ Connection successful! Database is accessible.';
+                resultDiv.className = 'mt-2 p-2 bg-green-100 text-green-800 rounded';
+                console.log('Connection test successful:', data);
+            } catch (error) {
+                resultDiv.textContent = '❌ Connection failed: ' + error.message;
+                resultDiv.className = 'mt-2 p-2 bg-red-100 text-red-800 rounded';
+                console.error('Connection test failed:', error);
+            }
+        }
+
+        // Test user sign up
+        async function signUpTest() {
+            const email = document.getElementById('test-email').value;
+            const password = document.getElementById('test-password').value;
+            const resultDiv = document.getElementById('auth-result');
+            
+            if (!email || !password) {
+                resultDiv.textContent = 'Please enter both email and password';
+                resultDiv.className = 'mt-2 p-2 bg-red-100 text-red-800 rounded';
+                resultDiv.classList.remove('hidden');
+                return;
+            }
+            
+            try {
+                const { data, error } = await supabase.auth.signUp({
+                    email,
+                    password,
+                });
+                
+                if (error) throw error;
+                
+                resultDiv.textContent = '✅ Sign up successful! Check your email for confirmation.';
+                resultDiv.className = 'mt-2 p-2 bg-green-100 text-green-800 rounded';
+                console.log('Sign up successful:', data);
+            } catch (error) {
+                resultDiv.textContent = '❌ Sign up failed: ' + error.message;
+                resultDiv.className = 'mt-2 p-2 bg-red-100 text-red-800 rounded';
+                console.error('Sign up failed:', error);
+            }
+            resultDiv.classList.remove('hidden');
+        }
+
+        // Test user sign in
+        async function signInTest() {
+            const email = document.getElementById('test-email').value;
+            const password = document.getElementById('test-password').value;
+            const resultDiv = document.getElementById('auth-result');
+            
+            if (!email || !password) {
+                resultDiv.textContent = 'Please enter both email and password';
+                resultDiv.className = 'mt-2 p-2 bg-red-100 text-red-800 rounded';
+                resultDiv.classList.remove('hidden');
+                return;
+            }
+            
+            try {
+                const { data, error } = await supabase.auth.signInWithPassword({
+                    email,
+                    password,
+                });
+                
+                if (error) throw error;
+                
+                resultDiv.textContent = `✅ Signed in as: ${data.user.email}`;
+                resultDiv.className = 'mt-2 p-2 bg-green-100 text-green-800 rounded';
+                console.log('Sign in successful:', data);
+            } catch (error) {
+                resultDiv.textContent = '❌ Sign in failed: ' + error.message;
+                resultDiv.className = 'mt-2 p-2 bg-red-100 text-red-800 rounded';
+                console.error('Sign in failed:', error);
+            }
+            resultDiv.classList.remove('hidden');
+        }
+
+        // Test user sign out
+        async function signOutTest() {
+            try {
+                const { error } = await supabase.auth.signOut();
+                if (error) throw error;
+                
+                const resultDiv = document.getElementById('auth-result');
+                resultDiv.textContent = '✅ Signed out successfully';
+                resultDiv.className = 'mt-2 p-2 bg-green-100 text-green-800 rounded';
+                resultDiv.classList.remove('hidden');
+                console.log('Signed out');
+            } catch (error) {
+                console.error('Sign out error:', error);
+            }
+        }
+
+        // Test database insert
+        async function testInsert() {
+            const resultDiv = document.getElementById('db-result');
+            resultDiv.classList.remove('hidden');
+            
+            try {
+                const testData = {
+                    created_at: new Date().toISOString(),
+                    test_message: 'This is a test record',
+                    random_value: Math.floor(Math.random() * 1000)
+                };
+                
+                const { data, error } = await supabase
+                    .from('test_table')
+                    .insert([testData])
+                    .select();
+                
+                if (error) throw error;
+                
+                resultDiv.textContent = '✅ Insert successful! Data: ' + JSON.stringify(data, null, 2);
+                resultDiv.className = 'mt-2 p-2 bg-green-100 text-green-800 rounded';
+                console.log('Insert test successful:', data);
+            } catch (error) {
+                resultDiv.textContent = '❌ Insert failed: ' + error.message;
+                resultDiv.className = 'mt-2 p-2 bg-red-100 text-red-800 rounded';
+                console.error('Insert test failed:', error);
+            }
+        }
+
+        // Test database select
+        async function testSelect() {
+            const resultDiv = document.getElementById('db-result');
+            resultDiv.classList.remove('hidden');
+            resultDiv.textContent = 'Fetching data...';
+            
+            try {
+                const { data, error } = await supabase
+                    .from('test_table')
+                    .select('*')
+                    .order('created_at', { ascending: false })
+                    .limit(5);
+                
+                if (error) throw error;
+                
+                resultDiv.innerHTML = '<strong>✅ Latest 5 records:</strong><pre class="mt-2 p-2 bg-white rounded border">' + 
+                    JSON.stringify(data, null, 2) + '</pre>';
+                resultDiv.className = 'mt-2 p-2 bg-green-50 rounded';
+                console.log('Select test successful:', data);
+            } catch (error) {
+                resultDiv.textContent = '❌ Select failed: ' + error.message;
+                resultDiv.className = 'mt-2 p-2 bg-red-100 text-red-800 rounded';
+                console.error('Select test failed:', error);
+            }
+        }
+
+        // Check auth state changes
+        supabase.auth.onAuthStateChange((event, session) => {
+            console.log('Auth state changed:', event, session);
+        });
+    </script>
+</body>
+</html>

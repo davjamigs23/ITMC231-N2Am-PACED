@@ -496,7 +496,7 @@
                 </div>
             </div>
 
-            <!-- Dashboard Cards, Note: Dummy Infos lang for representation purposes -->
+            <!-- Dashboard Cards -->
             <div class="dashboard-cards">
                 <div class="card">
                     <div class="card-header">
@@ -505,8 +505,10 @@
                             <i class="fas fa-users"></i>
                         </div>
                     </div>
-                    <div class="card-value">1,254</div>
-                    <div class="card-description">Registered users</div>
+                    <div class="card-content">
+                        <div class="card-value">0</div>
+                        <div class="card-description">Total Users</div>
+                    </div>
                 </div>
                 <div class="card">
                     <div class="card-header">
@@ -515,8 +517,10 @@
                             <i class="fas fa-clipboard-list"></i>
                         </div>
                     </div>
-                    <div class="card-value">28</div>
-                    <div class="card-description">12 pending approvals</div>
+                    <div class="card-content">
+                        <div class="card-value">0</div>
+                        <div class="card-description">Registration Requests</div>
+                    </div>
                 </div>
                 <div class="card">
                     <div class="card-header">
@@ -525,12 +529,14 @@
                             <i class="fas fa-edit"></i>
                         </div>
                     </div>
-                    <div class="card-value">156</div>
-                    <div class="card-description">Last updated: Today</div>
+                    <div class="card-content">
+                        <div class="card-value">0</div>
+                        <div class="card-description">Content Updates</div>
+                    </div>
                 </div>
             </div>
 
-            <!-- Recent Registration Requests Note: Dummy Infos muna tiglaag ko -->
+            <!-- Recent Registration Requests -->
             <div class="table-container">
                 <div class="table-header">
                     <h3 class="table-title">Recent Registration Requests</h3>
@@ -551,79 +557,8 @@
                             <th>Actions</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        <tr>
-                            <td>REG-2025-001</td>
-                            <td>John Smith</td>
-                            <td>Yamaha YDX-MORO</td>
-                            <td>May 9, 2025</td>
-                            <td><span class="status pending">Pending</span></td>
-                            <td>
-                                <button class="action-btn view">
-                                    <i class="fas fa-eye"></i>
-                                </button>
-                                <button class="action-btn approve">
-                                    <i class="fas fa-check"></i>
-                                </button>
-                                <button class="action-btn reject">
-                                    <i class="fas fa-times"></i>
-                                </button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>REG-2025-002</td>
-                            <td>Maria Garcia</td>
-                            <td>Trek Powerfly 5</td>
-                            <td>May 8, 2025</td>
-                            <td><span class="status active">Approved</span></td>
-                            <td>
-                                <button class="action-btn view">
-                                    <i class="fas fa-eye"></i>
-                                </button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>REG-2025-003</td>
-                            <td>Robert Johnson</td>
-                            <td>Specialized Turbo Vado</td>
-                            <td>May 8, 2025</td>
-                            <td><span class="status pending">Pending</span></td>
-                            <td>
-                                <button class="action-btn view">
-                                    <i class="fas fa-eye"></i>
-                                </button>
-                                <button class="action-btn approve">
-                                    <i class="fas fa-check"></i>
-                                </button>
-                                <button class="action-btn reject">
-                                    <i class="fas fa-times"></i>
-                                </button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>REG-2025-004</td>
-                            <td>Sarah Williams</td>
-                            <td>Giant Explore E+</td>
-                            <td>May 7, 2025</td>
-                            <td><span class="status rejected">Rejected</span></td>
-                            <td>
-                                <button class="action-btn view">
-                                    <i class="fas fa-eye"></i>
-                                </button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>REG-2025-005</td>
-                            <td>David Brown</td>
-                            <td>Cannondale Tesoro Neo X</td>
-                            <td>May 7, 2025</td>
-                            <td><span class="status active">Approved</span></td>
-                            <td>
-                                <button class="action-btn view">
-                                    <i class="fas fa-eye"></i>
-                                </button>
-                            </td>
-                        </tr>
+                    <tbody id="registrationsTableBody">
+                        <!-- Data will be loaded dynamically -->
                     </tbody>
                 </table>
             </div>
@@ -675,31 +610,206 @@
                 });
             });
 
-            // Action buttons functionality
-            const viewButtons = document.querySelectorAll('.action-btn.view');
-            const approveButtons = document.querySelectorAll('.action-btn.approve');
-            const rejectButtons = document.querySelectorAll('.action-btn.reject');
+            // Initialize Supabase (replace with your keys)
+            const supabaseUrl = 'https://your-project-ref.supabase.co';
+            const supabaseKey = 'your-anon-key';
+            const supabase = supabase.createClient(supabaseUrl, supabaseKey);
+
+            // Fetch recent registrations
+            async function loadRecentRegistrations() {
+                const { data, error } = await supabase
+                    .from('registrations')
+                    .select('*')
+                    .order('created_at', { ascending: false })
+                    .limit(5);
+                
+                if (data) {
+                    const tableBody = document.getElementById('registrationsTableBody');
+                    tableBody.innerHTML = '';
+                    
+                    data.forEach(reg => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${reg.id}</td>
+                            <td>${reg.user_name}</td>
+                            <td>${reg.ebike_model}</td>
+                            <td>${new Date(reg.created_at).toLocaleDateString()}</td>
+                            <td><span class="status ${reg.status}">${reg.status.charAt(0).toUpperCase() + reg.status.slice(1)}</span></td>
+                            <td>
+                                <button class="action-btn view">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                ${reg.status === 'pending' ? `
+                                <button class="action-btn approve">
+                                    <i class="fas fa-check"></i>
+                                </button>
+                                <button class="action-btn reject">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                                ` : ''}
+                            </td>
+                        `;
+                        tableBody.appendChild(row);
+                    });
+                    
+                    // Attach event listeners to new buttons
+                    attachEventListeners();
+                }
+            }
             
-            viewButtons.forEach(button => {
-                button.addEventListener('click', function() {
-                    alert('Viewing registration details...');
+            // Attach event listeners to action buttons
+            function attachEventListeners() {
+                document.querySelectorAll('.action-btn.view').forEach(btn => {
+                    btn.addEventListener('click', viewRegistration);
                 });
-            });
+                
+                document.querySelectorAll('.action-btn.approve').forEach(btn => {
+                    btn.addEventListener('click', approveRegistration);
+                });
+                
+                document.querySelectorAll('.action-btn.reject').forEach(btn => {
+                    btn.addEventListener('click', rejectRegistration);
+                });
+            }
             
-            approveButtons.forEach(button => {
-                button.addEventListener('click', function() {
-                    if (confirm('Are you sure you want to approve this registration?')) {
-                        alert('Registration approved!');
+            // View registration details
+            function viewRegistration(e) {
+                const row = e.target.closest('tr');
+                const id = row.cells[0].textContent;
+                alert(`Viewing registration ${id}`);
+            }
+            
+            // Approve registration
+            async function approveRegistration(e) {
+                const row = e.target.closest('tr');
+                const id = row.cells[0].textContent;
+                
+                if (confirm(`Approve registration ${id}?`)) {
+                    const { error } = await supabase
+                        .from('registrations')
+                        .update({ status: 'approved' })
+                        .eq('id', id);
+                    
+                    if (!error) {
+                        loadRecentRegistrations();
                     }
-                });
-            });
+                }
+            }
             
-            rejectButtons.forEach(button => {
-                button.addEventListener('click', function() {
-                    if (confirm('Are you sure you want to reject this registration?')) {
-                        alert('Registration rejected!');
+            // Reject registration
+            async function rejectRegistration(e) {
+                const row = e.target.closest('tr');
+                const id = row.cells[0].textContent;
+                
+                if (confirm(`Reject registration ${id}?`)) {
+                    const { error } = await supabase
+                        .from('registrations')
+                        .update({ status: 'rejected' })
+                        .eq('id', id);
+                    
+                    if (!error) {
+                        loadRecentRegistrations();
                     }
-                });
+                }
+            }
+
+            // Open add/edit modal
+            function openAddModal() {
+                document.getElementById('registrationModal').style.display = 'block';
+                document.getElementById('registrationId').value = '';
+                document.getElementById('userName').value = '';
+                document.getElementById('ebikeModel').value = '';
+                document.querySelector('.modal-title').textContent = 'Add New Registration';
+            }
+
+            // Close modal
+            function closeModal() {
+                document.getElementById('registrationModal').style.display = 'none';
+            }
+
+            // Handle form submission
+            document.getElementById('registrationForm').addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                const id = document.getElementById('registrationId').value;
+                const userName = document.getElementById('userName').value;
+                const ebikeModel = document.getElementById('ebikeModel').value;
+
+                if (!id) {
+                    // Create new registration
+                    const { error } = await supabase
+                        .from('registrations')
+                        .insert([
+                            {
+                                user_name: userName,
+                                ebike_model: ebikeModel,
+                                status: 'pending'
+                            }
+                        ]);
+                } else {
+                    // Update existing registration
+                    const { error } = await supabase
+                        .from('registrations')
+                        .update({
+                            user_name: userName,
+                            ebike_model: ebikeModel
+                        })
+                        .eq('id', id);
+                }
+
+                if (!error) {
+                    closeModal();
+                    loadRecentRegistrations();
+                }
+            });
+
+            // Edit registration
+            function editRegistration(e) {
+                const row = e.target.closest('tr');
+                const id = row.cells[0].textContent;
+                const userName = row.cells[1].textContent;
+                const ebikeModel = row.cells[2].textContent;
+
+                document.getElementById('registrationId').value = id;
+                document.getElementById('userName').value = userName;
+                document.getElementById('ebikeModel').value = ebikeModel;
+                document.querySelector('.modal-title').textContent = 'Edit Registration';
+                openAddModal();
+            }
+
+            // Delete registration
+            async function deleteRegistration(e) {
+                const row = e.target.closest('tr');
+                const id = row.cells[0].textContent;
+
+                if (confirm(`Delete registration ${id}?`)) {
+                    const { error } = await supabase
+                        .from('registrations')
+                        .delete()
+                        .eq('id', id);
+
+                    if (!error) {
+                        loadRecentRegistrations();
+                    }
+                }
+            }
+
+            // Load initial data
+            loadRecentRegistrations();
+
+            // Handle modal close when clicking outside
+            window.addEventListener('click', function(event) {
+                const modal = document.getElementById('registrationModal');
+                if (event.target === modal) {
+                    closeModal();
+                }
+            });
+
+            // Handle escape key to close modal
+            window.addEventListener('keydown', function(event) {
+                if (event.key === 'Escape') {
+                    closeModal();
+                }
             });
         });
     </script>

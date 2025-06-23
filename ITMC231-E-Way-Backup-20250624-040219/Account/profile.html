@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Profile - E-WAY</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script type="module" src="../js/supabase-config.js"></script>
+  <script type="module" src="../js/auth.js"></script>
+  <script type="module" src="../js/utils.js"></script>
+  <style>
+    /* Add any custom styles here */
+  </style>
+</head>
+<body class="bg-gray-50">
+  <!-- Header will be loaded here -->
+  <header id="main-header"></header>
+
+  <div class="min-h-screen pt-16">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div class="md:flex md:items-center md:justify-between mb-8">
+        <div class="flex-1 min-w-0">
+          <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:text-3xl sm:truncate">
+            My Profile
+          </h2>
+        </div>
+      </div>
+
+      <div class="mt-5 md:mt-0 md:col-span-2">
+        <div class="shadow overflow-hidden sm:rounded-md">
+          <div class="px-4 py-5 bg-white sm:p-6">
+            <div class="grid grid-cols-6 gap-6">
+              <div class="col-span-6 sm:col-span-3">
+                <label for="first-name" class="block text-sm font-medium text-gray-700">First name</label>
+                <input type="text" name="first-name" id="first-name" autocomplete="given-name"
+                  class="mt-1 focus:ring-green-500 focus:border-green-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+              </div>
+
+              <div class="col-span-6 sm:col-span-3">
+                <label for="last-name" class="block text-sm font-medium text-gray-700">Last name</label>
+                <input type="text" name="last-name" id="last-name" autocomplete="family-name"
+                  class="mt-1 focus:ring-green-500 focus:border-green-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+              </div>
+
+              <div class="col-span-6 sm:col-span-4">
+                <label for="email-address" class="block text-sm font-medium text-gray-700">Email address</label>
+                <input type="text" name="email-address" id="email-address" autocomplete="email"
+                  class="mt-1 focus:ring-green-500 focus:border-green-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
+                  disabled>
+              </div>
+
+              <div class="col-span-6 sm:col-span-3">
+                <label for="user-type" class="block text-sm font-medium text-gray-700">Account Type</label>
+                <select id="user-type" name="user-type" autocomplete="user-type"
+                  class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm"
+                  disabled>
+                  <option value="user">User</option>
+                  <option value="admin">Admin</option>
+                </select>
+              </div>
+
+              <div class="col-span-6">
+                <label for="about" class="block text-sm font-medium text-gray-700">About</label>
+                <div class="mt-1">
+                  <textarea id="about" name="about" rows="3"
+                    class="shadow-sm focus:ring-green-500 focus:border-green-500 mt-1 block w-full sm:text-sm border border-gray-300 rounded-md"
+                    placeholder="Tell us about yourself"></textarea>
+                </div>
+                <p class="mt-2 text-sm text-gray-500">Brief description for your profile.</p>
+              </div>
+
+              <div class="col-span-6">
+                <label class="block text-sm font-medium text-gray-700">Profile photo</label>
+                <div class="mt-1 flex items-center">
+                  <span class="inline-block h-12 w-12 rounded-full overflow-hidden bg-gray-100">
+                    <img id="profile-image" src="/Images/User Logo.png" alt="Profile" class="h-full w-full text-gray-300">
+                  </span>
+                  <button type="button"
+                    class="ml-5 bg-white py-2 px-3 border border-gray-300 rounded-md shadow-sm text-sm leading-4 font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+                    Change
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="px-4 py-3 bg-gray-50 text-right sm:px-6">
+            <button type="submit"
+              class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+              id="save-profile">
+              Save
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Change Password Section -->
+      <div class="mt-10 sm:mt-0">
+        <div class="md:grid md:grid-cols-3 md:gap-6">
+          <div class="md:col-span-1">
+            <div class="px-4 sm:px-0">
+              <h3 class="text-lg font-medium leading-6 text-gray-900">Change Password</h3>
+              <p class="mt-1 text-sm text-gray-600">Update your password associated with your account.</p>
+            </div>
+          </div>
+          <div class="mt-5 md:mt-0 md:col-span-2">
+            <form id="change-password-form">
+              <div class="shadow overflow-hidden sm:rounded-md">
+                <div class="px-4 py-5 bg-white sm:p-6">
+                  <div class="grid grid-cols-6 gap-6">
+                    <div class="col-span-6 sm:col-span-4">
+                      <label for="current-password" class="block text-sm font-medium text-gray-700">Current password</label>
+                      <input type="password" name="current-password" id="current-password" autocomplete="current-password"
+                        class="mt-1 focus:ring-green-500 focus:border-green-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                    </div>
+
+                    <div class="col-span-6 sm:col-span-4">
+                      <label for="new-password" class="block text-sm font-medium text-gray-700">New password</label>
+                      <input type="password" name="new-password" id="new-password" autocomplete="new-password"
+                        class="mt-1 focus:ring-green-500 focus:border-green-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                    </div>
+
+                    <div class="col-span-6 sm:col-span-4">
+                      <label for="confirm-password" class="block text-sm font-medium text-gray-700">Confirm new password</label>
+                      <input type="password" name="confirm-password" id="confirm-password" autocomplete="new-password"
+                        class="mt-1 focus:ring-green-500 focus:border-green-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                    </div>
+                  </div>
+                </div>
+                <div class="px-4 py-3 bg-gray-50 text-right sm:px-6">
+                  <button type="submit"
+                    class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+                    id="change-password">
+                    Update Password
+                  </button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { supabase } from '../js/supabase-config.js';
+    import { checkAuth } from '../js/auth.js';
+    import { showToast } from '../js/utils.js';
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      // Check if user is authenticated
+      const { user, error } = await checkAuth(true);
+      
+      if (error) {
+        console.error('Authentication error:', error);
+        return;
+      }
+
+      // Populate form with user data
+      if (user) {
+        document.getElementById('email-address').value = user.email || '';
+        document.getElementById('user-type').value = user.user_type || 'user';
+        
+        // Load additional user data if available
+        if (user.user_metadata) {
+          document.getElementById('first-name').value = user.user_metadata.first_name || '';
+          document.getElementById('last-name').value = user.user_metadata.last_name || '';
+          document.getElementById('about').value = user.user_metadata.about || '';
+        }
+      }
+
+      // Handle profile update
+      document.getElementById('save-profile').addEventListener('click', async (e) => {
+        e.preventDefault();
+        
+        const firstName = document.getElementById('first-name').value;
+        const lastName = document.getElementById('last-name').value;
+        const about = document.getElementById('about').value;
+        
+        try {
+          // Update user metadata
+          const { data, error } = await supabase.auth.updateUser({
+            data: {
+              first_name: firstName,
+              last_name: lastName,
+              about: about
+            }
+          });
+          
+          if (error) throw error;
+          
+          showToast('Profile updated successfully!', 'success');
+        } catch (error) {
+          console.error('Error updating profile:', error);
+          showToast('Error updating profile: ' + error.message, 'error');
+        }
+      });
+
+      // Handle password change
+      document.getElementById('change-password-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const currentPassword = document.getElementById('current-password').value;
+        const newPassword = document.getElementById('new-password').value;
+        const confirmPassword = document.getElementById('confirm-password').value;
+        
+        if (newPassword !== confirmPassword) {
+          showToast('New passwords do not match', 'error');
+          return;
+        }
+        
+        try {
+          // In a real app, you would verify the current password first
+          // This is a simplified example
+          const { data, error } = await supabase.auth.updateUser({
+            password: newPassword
+          });
+          
+          if (error) throw error;
+          
+          showToast('Password updated successfully!', 'success');
+          
+          // Clear the form
+          document.getElementById('change-password-form').reset();
+        } catch (error) {
+          console.error('Error updating password:', error);
+          showToast('Error updating password: ' + error.message, 'error');
+        }
+      });
+    });
+  </script>
+</body>
+</html>
